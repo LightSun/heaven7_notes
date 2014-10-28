@@ -1,0 +1,117 @@
+public class MainActivity extends ListActivity implements OnScrollListener { 
+     
+    private TextView mStatus; //显示滚屏状态 
+    private boolean mBusy = false; //标识是否存在滚屏操作 
+     
+    /**
+     * 自定义Adapter，实现ListView中view的显示
+     *
+     */ 
+    private class SlowAdapter extends BaseAdapter { 
+        private LayoutInflater mInflater; 
+         
+        public SlowAdapter(Context context) { 
+            mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE); 
+        } 
+ 
+        /**
+         * 列表中元素个数取决于数据的个数
+         */ 
+        public int getCount() { 
+            return mStrings.length; 
+        } 
+ 
+        /**
+         * 我们的模拟数据是从数组中获取的，因此这里直接返回索引值就可以获取相应的数据了
+         */ 
+        public Object getItem(int position) { 
+            return position; 
+        } 
+ 
+        /**
+         * 使用数组的索引作为唯一的id
+         */ 
+        public long getItemId(int position) { 
+            return position; 
+        } 
+ 
+        /**
+         * 获取List中每一行的view
+         */ 
+        public View getView(int position, View convertView, ViewGroup parent) { 
+            TextView text; 
+             
+            //给text赋值 
+            if (null == convertView) { 
+                text = (TextView) mInflater.inflate(android.R.layout.simple_list_item_1, parent, false); 
+            } else { 
+                text = (TextView) convertView; 
+            } 
+             
+            if (!mBusy) { 
+                //当前不处于加载数据的忙碌时期（没有滚屏），则显示数据 
+                text.setText(mStrings[position]); 
+                //这里约定将tag设置为null说明这个view已经有了正确的数据 
+                text.setTag(null); 
+            } else { 
+                //当前处于滚屏阶段，不加载数据，直接显示数据加载中提示 
+                text.setText("Loading..."); 
+                //tag非空说明这个view仍然需要进行数据加载并显示 
+                text.setTag(this); 
+            } 
+             
+            return text; 
+        } 
+         
+    } 
+     
+    @Override 
+    public void onCreate(Bundle savedInstanceState) { 
+        super.onCreate(savedInstanceState); 
+        setContentView(R.layout.main); 
+         
+        mStatus = (TextView) findViewById(R.id.status); 
+        mStatus.setText("Idle"); 
+         
+        //使用自定义的ListAdapter将数据映射到TextView中 
+        setListAdapter(new SlowAdapter(this)); 
+         
+        //设置滚动监听器 
+        getListView().setOnScrollListener(this); 
+    } 
+ 
+    public void onScroll(AbsListView view, int firstVisibleItem, 
+            int visibleItemCount, int totalItemCount) { 
+         
+    } 
+ 
+    public void onScrollStateChanged(AbsListView view, int scrollState) { 
+        switch (scrollState) { 
+        case OnScrollListener.SCROLL_STATE_IDLE: //Idle态，进行实际数据的加载显示 
+            mBusy = false; 
+             
+            int first = view.getFirstVisiblePosition(); 
+            int count = view.getChildCount(); 
+            for (int i = 0; i < count; i++) { 
+                TextView tv = (TextView) view.getChildAt(i); 
+                if (tv.getTag() != null) { //非null说明需要加载数据 
+                    tv.setText(mStrings[first + i]); 
+                    tv.setTag(null); 
+                } 
+            } 
+             
+            mStatus.setText("Idle"); 
+            break;   
+        case OnScrollListener.SCROLL_STATE_TOUCH_SCROLL: 
+            mBusy = true; 
+            mStatus.setText("Touch Scroll"); 
+            break; 
+        case OnScrollListener.SCROLL_STATE_FLING: 
+            mBusy = true; 
+            mStatus.setText("Fling"); 
+            break; 
+        default: 
+            mStatus.setText("Are you kidding me!"); 
+            break; 
+        } 
+    } 

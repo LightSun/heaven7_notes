@@ -1,0 +1,6 @@
+在BroadcastReceiver的onReceive（Context context , Intent intent ）这第一个context到底是哪一个context？是Activity还是Application?通过测试发现：
+
+如果你的BroadcastReceiver是通过在Activity中的this.registerReceiver(myBroadcaster, filter); 
+来注册的话，那么这个context就是这个Activity，
+
+而如果是通过AndroidManifest来注册的话，那么这个context就是：android.app.ReceiverRestrictedContext。

@@ -1,0 +1,17 @@
+ 
+详细: http://407827531.iteye.com/blog/1117199
+
+ 固定宽度，又保持宽高比的方式
+<ImageView
+                android:id="@+id/iv_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_launcher" 
+
+                android:adjustViewBounds="true"
+                android:maxWidth="@dimen/first_page_item_iv_width_height"
+                android:maxHeight="@dimen/first_page_item_iv_width_height"
+                
+/>
+
+//按原定图片，保持比例 scaleType= centerCrop .前提是给的图片>=所需要的填充的大小

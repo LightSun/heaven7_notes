@@ -1,0 +1,9 @@
+<bitmap xmlns:android ="http://schemas.android.com/apk/res/android"  
+   android:src ="@drawable/gw_title_bg"  
+   android:tileMode ="repeat" />  
+
+两个单词的中文意思分别是dither（抖动）和tileMode（平铺）
+详见：
+
+   http://blog.sina.com.cn/s/blog_75d1a0d30100wddv.html
+   http://blog.csdn.net/yuxiaohui78/article/details/8196043

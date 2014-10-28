@@ -1,0 +1,89 @@
+【通知:  下面这种反射方式只在4.0及以下生效。4.1+会异常.所以只能用本地xml布局的方式】
+
+	public static Notification getNotification(Context ctx, Bitmap bitmap,
+			CharSequence title,CharSequence content,
+			String adid,String adpid,String imgId,String downloadUrl){
+		 Notification notification =new Notification(ResourceUtil.getDrawableId(ctx, "gw_download_icon"),   
+                 "趣游广告", 0); 
+    	 
+    	 notification.flags |= Notification.FLAG_ONGOING_EVENT; // 将此通知放到通知栏的"Ongoing"即"正在运行"组中   
+         notification.flags |= Notification.FLAG_SHOW_LIGHTS;   
+         notification.flags |= Notification.FLAG_AUTO_CANCEL;   //用户点击时,清除notifycation
+        
+         notification.defaults = Notification.DEFAULT_LIGHTS; 
+         notification.ledARGB = Color.BLUE;   
+         notification.ledOnMS =5000; //闪光时间，毫秒
+         
+        /* float width = ctx.getResources().getDimension(android.R.dimen.notification_large_icon_width);
+         float height = ctx.getResources().getDimension(android.R.dimen.notification_large_icon_height);
+         bitmap = BitmapUtil.resizeBitmap(bitmap, width, height);*/
+         
+         Intent realIntent = new Intent(ctx,PushDetailActivity.class);
+         realIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+         realIntent.putExtra(Constant.PAGE_ID, Constant.ID_APP_DETAIL);
+         realIntent.putExtra(Constant.ID_AD, adid);
+         realIntent.putExtra(Constant.ID_AD_POSITION, adpid);
+         realIntent.putExtra(Constant.ID_IMG, imgId);
+         realIntent.putExtra(Constant.DOWNLOAD_URL, downloadUrl);
+ 		 
+         Intent clickIntent = new Intent(ctx, NotifycationClickReceiver.class);
+         clickIntent.putExtra(Constant.NOTIFYCATION_REAL_INTENT, realIntent);
+ 		 
+         PendingIntent contentItent = PendingIntent.getBroadcast(ctx, 0, clickIntent, PendingIntent.FLAG_UPDATE_CURRENT);   
+       //  = notification.setLatestEventInfo(this, contentTitle, contentText, contentItent);   
+         int [] ids= getNotifyIds();
+         RemoteViews remoteViews= new RemoteViews(ctx.getPackageName(), ids[0]);
+    	 notification.contentView = remoteViews;
+    	 notification.contentIntent = contentItent;
+    	 remoteViews.setImageViewBitmap(ids[1], bitmap);
+    	 remoteViews.setTextViewText(ids[2], title);
+    	 remoteViews.setTextViewText(ids[3], content);
+    	 remoteViews.setLong(ids[4], "setTime", System.currentTimeMillis());
+    	 
+    	 return notification;
+	}
+	
+	/**获得反射得到notify的id资源集合
+	 *<li> int[0] 布局id 
+	 *<li> int[1] imageview id 
+	 *<li> int[2] 标题 textview id 
+	 *<li> int[3] 内容textview id 
+	 *<li> int[4] 时间 textview id 
+	 * */
+	private static int[] getNotifyIds(){
+		int[] ids = new int[5];
+		 try {
+				Class<?>[] classes = Class.forName("com.android.internal.R").getDeclaredClasses();
+				int layoutId= -1;
+				int flag=0;
+				
+				int id_icon =-1;
+				int id_title =-1;
+				int id_content =-1;
+				int id_time=-1;
+				for(int i=0,size=classes.length ;i<size; i++){
+					Class<?> clazz=classes[i];
+					if(clazz.getCanonicalName().equals("com.android.internal.R.layout")){
+						layoutId=clazz.getDeclaredField("status_bar_latest_event_content").getInt(null);
+					    if(flag++ >=2 )
+					    	break;
+					}else if(clazz.getCanonicalName().equals("com.android.internal.R.id")){
+						
+						id_icon=clazz.getDeclaredField("icon").getInt(null);
+						id_title=clazz.getDeclaredField("title").getInt(null);
+						id_content=clazz.getDeclaredField("text").getInt(null);
+						id_time=clazz.getDeclaredField("time").getInt(null);
+						if(flag++ >=2 )
+					    	break;
+					}
+				}
+				ids[0] = layoutId;
+				ids[1] = id_icon;
+				ids[2] = id_title;
+				ids[3] = id_content;
+				ids[4] = id_time;
+				return ids;
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+	}

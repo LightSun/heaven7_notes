@@ -1,0 +1,16 @@
+SwipeRefreshLayout   google下拉刷新控件，support中，在19.1以上才有
+ToolBar              替代actionBar,位于support包中
+
+
+
+android.os.ConditionVariable 
+      3个方法: close()  indicate the  ConditionVariable can be block.
+               block(long time)  阻塞超时返回false. 被open立即返回true
+               open()   Open the condition, and release all threads that are blocked.
+
+      see also:  com.example.android.apis.app.NotifyingService
+
+
+android.os.Messenger   
+      activity和service通信除了aidl就是Messenger(双方可以互相发送消息)。
+     see also: com.example.android.apis.app.MessengerServiceActivities$Binding

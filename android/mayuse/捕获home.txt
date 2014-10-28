@@ -1,0 +1,100 @@
+捕获home
+
+	class catchhome implements Runnable
+	{
+
+		@Override
+		public void run() 
+		{
+			Process logcatProcess = null;
+			BufferedReader bufferedReader = null;
+			try
+			{
+				homePackageNames=getHomes();
+				if(isHome())
+				{
+					Log.e("按了home", "-----");
+					BluetoolUtil.mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+			        BluetoolUtil.mBluetoothAdapter.disable();
+					if(getSupportFragmentManager().findFragmentByTag("measurefragmentVar")!=null)
+					{				
+						measureFragment mesu=(measureFragment)getSupportFragmentManager().findFragmentByTag("measurefragmentVar");
+						if(mesu.sensorManager!=null&&mesu.sensorEventListener!=null)
+						{
+							mesu.sensorManager.unregisterListener(mesu.sensorEventListener); 
+						}
+						mesu.setBlueInitCancel();
+					}	
+				}
+				else
+				{
+					Log.e("没有按home", "-----");
+				}
+				/** 获取系统logcat日志信息,下面的按了home， 休眠键，重新进入另一个页面，都会打印出系统日志 /dev/log/main*/
+//				logcatProcess = Runtime.getRuntime().exec(new String[] {"logcat", "ActivityManager:I *:S"});
+//				bufferedReader = new BufferedReader(new InputStreamReader(logcatProcess.getInputStream()));
+//				String line;
+//				while ((line = bufferedReader.readLine()) != null)
+//				{
+//					Log.e("日志打印", line.toString());
+//					if (line.indexOf("/dev/log/main") > 0)
+//					{
+//					    /** 这里可以处理你对点击Home的操作哦 */
+//						BluetoolUtil.mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+//				        BluetoolUtil.mBluetoothAdapter.disable();
+//						if(getSupportFragmentManager().findFragmentByTag("measurefragmentVar")!=null)
+//						{				
+//							measureFragment mesu=(measureFragment)getSupportFragmentManager().findFragmentByTag("measurefragmentVar");
+//							if(mesu.sensorManager!=null&&mesu.sensorEventListener!=null)
+//							{
+//								mesu.sensorManager.unregisterListener(mesu.sensorEventListener); 
+//							}
+//							mesu.setBlueInitCancel();
+//						}
+//						Runtime.getRuntime().exec("logcat -c");//删除日志
+//					}
+//				}
+				
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+						
+		}
+		
+	}
+	
+	 /** 
+     * 获得属于桌面的应用的应用包名称 
+     * @return 返回包含所有包名的字符串列表 
+     */  
+	List<String> homePackageNames=null;
+    private List<String> getHomes() {  
+        List<String> names = new ArrayList<String>();  
+        PackageManager packageManager = bgm_index_home_in.this.getPackageManager();  
+        //属性  
+        Intent intent = new Intent(Intent.ACTION_MAIN);  
+        intent.addCategory(Intent.CATEGORY_HOME);  
+        List<ResolveInfo> resolveInfo = packageManager.queryIntentActivities(intent,  
+                PackageManager.MATCH_DEFAULT_ONLY);  
+        for(ResolveInfo ri : resolveInfo){  
+            names.add(ri.activityInfo.packageName);  
+            System.out.println(ri.activityInfo.packageName);  
+        }  
+        return names;  
+    }  
+    
+    public boolean isHome(){  
+        ActivityManager mActivityManager = (ActivityManager)bgm_index_home_in.this.getSystemService(Context.ACTIVITY_SERVICE);  
+        List<RunningTaskInfo> rti = mActivityManager.getRunningTasks(1);
+        if(homePackageNames!=null)
+        {
+        	return homePackageNames.contains(rti.get(0).topActivity.getPackageName());  
+        }
+        else
+        {
+        	return false;
+        }
+        
+    }

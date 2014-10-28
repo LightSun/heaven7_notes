@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">应用内付费实例4.0.0</string>
+    <string name="billing"> 订购</string>
+    <string name="query">查询</string>
+    <string name="unsub">退订</string>
+    <string name="billingText">购买商品</string>
+    <string name="unsubText">商品退订</string>
+    <string name="queryText">已订购商品查询</string>
+    <string name="billingintro">可信交易购买接口，开发者可以利用此接口进行应用内支付 ，接口方法为 order（xxx）。具体使用方法，请参考开发者文档 。</string>
+    <string name="unsubintro">可信交易退订接口，开发者可通过调用此接口，供用户退订应用内已购买商品。接口为unsubscribe（xx），接口使用请参考开发者文档</string>
+    <string name="queryintro">可信交易查询接口，开发者可通过调用此接口，供用户查询应用内已购买商品。接口为query（xx），接口使用请参考开发者文档</string>
+    <string name="clean">清除本地缓存</string>
+    <string name="billingNextText">商品续订</string>
+    <string name="billingNext">续订</string>
+    <string name="billingNextintro">租赁类型商品续订下一周期。 该商品类型仅限于租赁类型商品。如果某个租赁商品已经订购，需要继续订购下一个周期，那么就可以使用此接口。否则使用此接口，将无法成功</string>
+    
+</resources>

@@ -1,0 +1,22 @@
+使用new Dialog(context, style).setContentView(layout);
+即可定制属于自己项目的dialog
+当然，这儿的style起到了至关重要的作用，要知道那个与项目不搭的白边得全靠它了
+在value下新建style.xml
+
+
+<style name="AsyncTaskDialog" parent="@android:Theme.Dialog">  
+        <item name="android:windowFrame">@null</item>  
+        <item name="android:windowNoTitle">true</item>  
+        <item name="android:windowBackground">@android:color/transparent</item>  
+        <item name="android:windowIsFloating">true</item>  
+        <item name="android:windowContentOverlay">@null</item>  
+        <item name="android:background">@android:color/transparent</item>  
+    </style>  
+
+
+dialog 动画
+
+ <style name="main_menu_animstyle">
+        <item name="android:windowEnterAnimation">@anim/settingswindow_in_anim</item>
+        <item name="android:windowExitAnimation">@anim/settingswindow_out_anim</item>
+    </style>

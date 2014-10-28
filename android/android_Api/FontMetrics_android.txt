@@ -1,0 +1,61 @@
+
+Paint.FontMetrics 字体矩阵相关
+
+
+/** 绘制FontMetrics对象的各种线 */  
+mPaint.reset();  
+mPaint.setColor(Color.WHITE);  
+mPaint.setTextSize(80);  
+// FontMetrics对象   
+FontMetrics fontMetrics = mPaint.getFontMetrics();  
+String text = "abcdefg";  
+// 计算每一个坐标   
+float textWidth = mPaint.measureText(text);  
+float baseX = 30;  
+float baseY = 700;  
+float topY = baseY + fontMetrics.top;  
+float ascentY = baseY + fontMetrics.ascent;  
+float descentY = baseY + fontMetrics.descent;  
+float bottomY = baseY + fontMetrics.bottom;  
+// 绘制文本   
+canvas.drawText(text, baseX, baseY, mPaint);  
+// BaseLine描画   
+mPaint.setColor(Color.RED);  
+canvas.drawLine(baseX, baseY, baseX + textWidth, baseY, mPaint);  
+mPaint.setTextSize(20);  
+canvas.drawText("base", baseX + textWidth, baseY, mPaint);  
+// Base描画   
+canvas.drawCircle(baseX, baseY, 5, mPaint);  
+// TopLine描画   
+mPaint.setColor(Color.LTGRAY);  
+canvas.drawLine(baseX, topY, baseX + textWidth, topY, mPaint);  
+canvas.drawText("top", baseX + textWidth, topY, mPaint);  
+// AscentLine描画   
+mPaint.setColor(Color.GREEN);  
+canvas.drawLine(baseX, ascentY, baseX + textWidth, ascentY, mPaint);  
+canvas.drawText("ascent", baseX + textWidth, ascentY + 10, mPaint);  
+// DescentLine描画   
+mPaint.setColor(Color.YELLOW);  
+canvas.drawLine(baseX, descentY, baseX + textWidth, descentY, mPaint);  
+canvas.drawText("descent", baseX + textWidth, descentY, mPaint);  
+// ButtomLine描画   
+mPaint.setColor(Color.MAGENTA);  
+canvas.drawLine(baseX, bottomY, baseX + textWidth, bottomY, mPaint);  
+canvas.drawText("buttom", baseX + textWidth, bottomY + 10, mPaint);
+  
+相信通过以上程序，能够很好的理解topLine，buttomLine，baseLine，ascentLine，descentLine。
+另外：Paint类有两个方法
+
+public native float ascent();  
+
+public native float descent();  
+ascent()：the distance above the baseline（baseline以上的height）
+descent()：the distance below the baseline（baseline以下的height）
+
+所以ascent() + descent() 可以看成文字的height。
+
+到此为止，怎么获取文字的height和width都已经揭晓了：
+
+获取height ： mPaint.ascent() + mPaint.descent()
+
+获取width ： mPaint.measureText(text)

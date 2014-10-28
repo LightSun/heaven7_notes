@@ -1,0 +1,9 @@
+算法  eg：斐波那契序列
+
+减少对象分配 
+
+
+缓存 
+   SparseArray HashMap LRU
+
+架构

@@ -1,0 +1,12 @@
+ 
+1, solution: 将箭头靠右(系统默认箭头靠左)
+
+    int marginLeft= (int) getDimen("recharge_mycard_ll_container_margin_left_right");
+    int width = SDKUtil.getWidth() - 2*marginLeft;
+
+    if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+			 //< android 4.3
+			 elv.setIndicatorBounds(width - 40, width - 10);
+		 }else{
+			 elv.setIndicatorBoundsRelative(width - 40, width - 10);  //API 18 =4.3
+		 }

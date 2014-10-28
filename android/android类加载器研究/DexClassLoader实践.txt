@@ -1,0 +1,60 @@
+PathClassLoader 只能加载已经安装到 Android 系统中的 apk 文件，也就是 /app/data   目录下的 apk 文件。
+其它位置的文件加载的时候都会出现 ClassNotFoundException. 
+
+DexClassLoader 可以加载 apk, jar 或者 dex 文件，而且可以加载sdcard下面的文件，
+下面主要通过例子讲解DexClassLoader和PathClassLoader的用法。
+
+
+
+
+
+用DexClassLoader加载sd卡的dex文件
+
+1 ---将你的类库打包成jar文件。
+
+2，到类似 这个目录下 D:\develop\android\android-sdk-windows\build-tools\18.0.1
+    用dx命令生成dex文件,后缀只能是dex或者：
+         示例 dx --dex --output=Myplugdex.jar DexClassLoaderStudy.jar
+          //第3个参数是要生成的dex文件，第4个是源jar文件
+
+3。主程序
+
+   public class MainActivity extends Activity {
+
+	private TextView tv;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+		
+		tv = (TextView) findViewById(R.id.tv1);
+		useDexClassLoader();
+	}
+	
+	 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+	public void useDexClassLoader(){
+		 String dexPath = "/mnt/sdcard/Myplugdex.jar"; //该文件必须存在
+	     String dexOutputDir= "/data/data/com.heaven.dexclassloadertest";
+	  try {
+				Runtime.getRuntime().exec("rm /data/data/com.heaven.dexclassloadertest/Myplugdex.dex");
+	     } catch (IOException e1) {
+				e1.printStackTrace();  
+			}          
+	         
+		DexClassLoader cDexClassLoader = new DexClassLoader(dexPath, dexOutputDir,
+				null, this.getClass().getClassLoader()); 
+			try{
+				Class<?>class1 = cDexClassLoader.loadClass("com.heaven.dexclassloaderstudy.impl.PlugImpl");	
+				Object obj = class1.newInstance();
+				Class [] params = new Class[2];
+				params[0] = Integer.TYPE;
+				params[1] = Integer.TYPE;  
+				Method action = class1.getMethod("add",params);	
+				Integer ret =(Integer)action.invoke(obj, 12,13);
+			   		tv.setText("method :"+action.getName()+" ,  return  :"+ret);
+			}catch (Exception e) {    
+				e.printStackTrace();
+			}    
+	 	
+	}

@@ -1,0 +1,15 @@
+触摸事件执行顺序是:
+ <code>
+Activity.dispatchTouchEvent()
+ViewGroup.onInterceptTouchEvent
+ViewGroup.dispatchTouchEvent()
+View.dispatchTouchEvent()
+View.onTouchEvent()
+ViewGroup.onTouchEvent()
+Activity.onTouchEvent()
+</code>
+
+onInterceptTouchEvent 返回false,则后续再来的事件(比如ACTION_UP)会继续传递给子view的ontouchEvent ,
+onInterceptTouchEvent 返回true,则后续再来的事件(比如ACTION_UP)就不会传递给子view.
+
+view的onTouchEvent返回true,则表示事件已经消化干净,viewgroup的onTouchEvent将不会被调用,否则相反.

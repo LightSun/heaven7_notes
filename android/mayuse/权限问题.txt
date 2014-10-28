@@ -1,0 +1,2 @@
+checkCalling   /*只能跨进程*/
+checkPermission()检查权限

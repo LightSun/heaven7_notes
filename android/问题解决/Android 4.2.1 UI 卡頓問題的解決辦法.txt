@@ -1,0 +1,37 @@
+原文:  http://www.oschina.net/question/1264152_140087
+
+但是我發現我另一支手機，怎麼優化 UI就是卡卡的，以剛剛的例子來說，放掉油門之後，似乎有人幫你踩煞車一般。沒辦法了，只好在 Eclipse 裡調用 DDMS看看到底發生了什麼事情。
+
+不到一分鐘就看出來了，實在太明顯了，一片紅的線性區域。原來 ViewGroup.resolvertlpropertiesifneeded() 這個函數調用太多了，而且是個 BottleNeck。網路上資料不太多，但國外有人也提到了
+
+It seems like resolveRtlPropertiesIfNeeded() method (Android 4.2) takes lots of time. Some complex animations on Nexus 7 runs much slower than on old Motorola XOOM (OS < Android 4.2).?
+
+https://plus.google.com/+GrigoriyKarpiak/posts/aTFKWctpmBg
+
+原來在 4.2.1 裡面，原生系統的確有些問題，所以在計算 Layout 由左至右，或是由右至左(阿拉伯文)花了太多時間。Google 工程師 Fabrice Di Meglio 也證實了這一點，並表示在 4.2.2 已經修復了。
+
+但我那山寨手機就只有 4.2.1 的 ROM，似乎國內很多手機的ROM也是，所以我找到一個方法強制他不去執行 ViewGroup.resolveRtlPropertiesIfNeeded()
+
+在你的 View Holder裡面把所有元件強制設定 LayoutDirection (很不幸，這個是 API 17 - 4.2.x 才有)，舉例來說
+
+    @SuppressLint( "NewApi" )
+    @Override
+    public View onCreateView( LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState ) 
+    {
+        View view = inflater.inflate( R.layout.listview, container, false );
+
+        myTextView = ( TextView ) view.findViewById( R.id.empty       );
+        myProgressBar = ( ProgressBar ) view.findViewById( R.id.progressbar );
+        pullToRefreshListView = ( PullToRefreshListView ) view.findViewById( R.id.listView );
+
+        if ( android.os.Build.VERSION.SDK_INT == VERSION_CODES.JELLY_BEAN_MR1 )
+        {
+           if ( myTextView != null ) myTextView.setLayoutDirection( View.LAYOUT_DIRECTION_LTR );
+           if ( myProgressBar != null ) myProgressBar.setLayoutDirection( TextView.LAYOUT_DIRECTION_LTR );
+           if ( progressBar != null ) progressBar.setLayoutDirection( ProgressBar.LAYOUT_DIRECTION_LTR );
+        }
+        
+        return view;
+    }
+    
+現在看起來運行比之前順暢很多，不過還是沒有4.1.2完美。再次用 Eclipse DDMS觀察，的確 ViewGroup.resolvertlpropertiesifneeded() 已經踢出前兩百個耗時的函數裡了。

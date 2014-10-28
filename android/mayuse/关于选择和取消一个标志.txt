@@ -1,0 +1,9 @@
+
+前提： 这些标志是2^n次方的 
+
+选择
+mGroupFlags |= FLAG_DISALLOW_INTERCEPT;
+   
+取消(按位取反然后&)
+
+mGroupFlags &=  ~FLAG_DISALLOW_INTERCEPT;

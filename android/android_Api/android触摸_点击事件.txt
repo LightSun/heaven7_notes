@@ -1,0 +1,227 @@
+
+【1. 触摸事件执行顺序】
+
+ <code>
+Activity.dispatchTouchEvent()
+ViewGroup.onInterceptTouchEvent
+ViewGroup.dispatchTouchEvent()
+View.dispatchTouchEvent()
+View.onTouchEvent()
+ViewGroup.onTouchEvent()
+Activity.onTouchEvent()
+</code>
+
+【OnTouch OnClick onLongClick】
+博客原文地址:
+   http://my.oschina.net/zhangqingcai/blog/29468
+
+
+针对屏幕上的一个View控件，Android如何区分应当触发onTouchEvent，还是onClick，亦或是onLongClick事件？
+
+在Android中，一次用户操作可以被不同的View按次序分别处理，并将完全响应了用户一次UI操作称之为消费了该事件(consume)，那么Android是按什么次序将事件传递的呢?又在什么情况下判定为消费了该事件？
+
+      搞清楚这些问题对于编写出能正确响应UI操作的代码是很重要的，尤其当屏幕上的不同View需要针对此次UI操作做出各种不同响应的时候更是如此，一个典型例子就是用户在桌面上放置了一个Widget，那么当用户针对widget做各种操作时，桌面本身有的时候要对用户的操作做出响应，有时忽略。只有搞清楚事件触发和传递的机制才有可能保证在界面布局非常复杂的情况下，UI控件仍然能正确响应用户操作。
+
+ 
+
+1.  onTouchEvent
+
+     onTouchEvent中要处理的最常用的3个事件就是：ACTION_DOWN、ACTION_MOVE、ACTION_UP。
+
+     这三个事件标识出了最基本的用户触摸屏幕的操作，含义也很清楚。虽然大家天天都在用它们，但是有一点请留意，ACTION_DOWN事件作为起始事件，它的重要性是要超过ACTION_MOVE和ACTION_UP的，如果发生了ACTION_MOVE或者ACTION_UP，那么一定曾经发生了ACTION_DOWN。
+
+     从Android的源代码中能看到基于这种不同重要性的理解而实现的一些交互机制，SDK中也有明确的提及，例如在ViewGroup的onInterceptTouchEvent方法中，如果在ACTION_DOWN事件中返回了true，那么后续的事件将直接发给onTouchEvent，而不是继续发给onInterceptTouchEvent。
+
+ 
+
+2.  onClick、onLongClick与onTouchEvent
+
+     曾经看过一篇帖子提到，如果在View中处理了onTouchEvent，那么就不用再处理onClick了，因为Android只会触发其中一个方法。这个理解是不太正确的，针对某个view，用户完成了一次触碰操作，显然从传感器上得到的信号是手指按下和抬起两个操作，我们可以理解为一次Click，也可以理解为发生了一次ACTION_DOWN和ACTION_UP，那么Android是如何理解和处理的呢？
+
+     在Android中，onClick、onLongClick的触发是和ACTION_DOWN及ACTION_UP相关的，在时序上，如果我们在一个View中同时覆写了onClick、onLongClick及onTouchEvent的话，onTouchEvent是最先捕捉到ACTION_DOWN和ACTION_UP事件的，其次才可能触发onClick或者onLongClick。主要的逻辑在View.java中的onTouchEvent方法中实现的：
+
+ 
+
+case MotionEvent.ACTION_DOWN:
+
+    mPrivateFlags |= PRESSED;
+
+    refreshDrawableState();
+
+    if ((mViewFlags & LONG_CLICKABLE) == LONG_CLICKABLE) {
+
+         postCheckForLongClick(); 
+
+    }
+
+    break;
+
+case MotionEvent.ACTION_UP:
+
+    if ((mPrivateFlags & PRESSED) != 0) {
+
+         boolean focusTaken = false;
+
+         if (isFocusable() && isFocusableInTouchMode() && !isFocused()) {
+
+               focusTaken = requestFocus();
+
+         }
+
+ 
+
+    if (!mHasPerformedLongPress) {
+
+       if (mPendingCheckForLongPress != null) {
+
+             removeCallbacks(mPendingCheckForLongPress);
+
+       }
+
+       if (!focusTaken) {
+
+              performClick();
+
+       }
+
+    }
+
+    …
+
+    break;
+
+
+
+     可以看到，Click的触发是在系统捕捉到ACTION_UP后发生并由performClick()执行的，performClick里会调用先前注册的监听器的onClick()方法：
+
+public boolean performClick() {
+
+    …
+
+    if (mOnClickListener != null) {
+
+        playSoundEffect(SoundEffectConstants.CLICK);
+
+        mOnClickListener.onClick(this);
+
+        return true;
+
+    }
+
+        return false;
+
+}
+
+ 
+
+LongClick的触发则是从ACTION_DOWN开始，由postCheckForLongClick()方法完成：
+
+private void postCheckForLongClick() {
+
+     mHasPerformedLongPress = false;
+
+     if (mPendingCheckForLongPress == null) {
+
+         mPendingCheckForLongPress = new CheckForLongPress();
+
+     }
+
+     mPendingCheckForLongPress.rememberWindowAttachCount();
+
+     postDelayed(mPendingCheckForLongPress, ViewConfiguration.getLongPressTimeout());
+
+}
+
+可以看到，在ACTION_DOWN事件被捕捉后，系统会开始触发一个postDelayed操作，delay的时间在Eclair2.1上为500ms，500ms后会触发CheckForLongPress线程的执行：
+
+class CheckForLongPress implements Runnable {
+
+…
+
+        public void run() {
+
+            if (isPressed() && (mParent != null)
+
+                    && mOriginalWindowAttachCount == mWindowAttachCount) {
+
+                if (performLongClick()) {
+
+                    mHasPerformedLongPress = true;
+
+                }
+
+            }
+
+        }
+
+…
+
+}
+
+
+
+如果各种条件都满足，那么在CheckForLongPress中执行performLongClick()，在这个方法中将调用onLongClick()：
+
+public boolean performLongClick() {
+
+      …
+
+      if (mOnLongClickListener != null) {
+
+          handled = mOnLongClickListener.onLongClick(View.this);
+
+      }
+
+      …
+
+}
+
+
+
+从实现中可以看到onClick()和onLongClick()方法是由ACTION_DOWN和ACTION_UP事件捕捉后根据各种情况最终确定是否触发的，也就是说如果我们在一个Activity或者View中同时监听或者覆写了onClick(),onLongClick()和onTouchEvent()方法，并不意味着只会发生其中一种。
+
+ 
+
+下面是一个onClick被触发的基本时序的Log：
+
+04-05 05:57:47.123: DEBUG/TSActivity(209): onTouch ACTION_DOWN
+
+04-05 05:57:47.263: DEBUG/TSActivity(209): onTouch ACTION_UP
+
+04-05 05:57:47.323: DEBUG/TSActivity(209): onClick
+
+可以看出是按ACTION_DOWN -> ACTION_UP -> onClick的次序发生的。
+
+ 
+
+下面是一个onLongClick被触发的基本时序的Log：
+
+04-05 06:00:04.133: DEBUG/TSActivity(248): onTouch ACTION_DOWN
+
+04-05 06:00:04.642: DEBUG/TSActivity(248): onLongClick 
+
+04-05 06:00:05.083: DEBUG/TSActivity(248): onTouch ACTION_UP
+
+可以看到，在保持按下的状态一定时间后会触发onLongClick,之后抬起手才会发生ACTION_UP。
+
+ 
+
+3.  onClick和onLongClick能同时发生吗？
+
+     要弄清楚这个问题只要理解Android对事件处理的所谓消费(consume)概念即可，一个用户的操作会被传递到不同的View控件和同一个控件的不同监听方法处理，任何一个接收并处理了该次事件的方法如果在处理完后返回了true，那么该次event就算被完全处理了，其他的View或者监听方法就不会再有机会处理该event了。
+
+     onLongClick的发生是由单独的线程完成的，并且在ACTION_UP之前，而onClick的发生是在ACTION_UP后，因此同一次用户touch操作就有可能既发生onLongClick又发生onClick。这样是不是不可思议？所以及时向系统表示“我已经完全处理（消费）了用户的此次操作”，是很重要的事情。例如，我们如果在onLongClick()方法的最后return true，那么onClick事件就没有机会被触发了。
+
+ 
+
+下面的Log是在onLongClick()方法return false的情况下，一次触碰操作的基本时序：
+
+04-05 06:00:53.023: DEBUG/TSActivity(277): onTouch ACTION_DOWN
+
+04-05 06:00:53.533: DEBUG/TSActivity(277): onLongClick 
+
+04-05 06:00:55.603: DEBUG/TSActivity(277): onTouch ACTION_UP
+
+04-05 06:00:55.663: DEBUG/TSActivity(277): onClick
+
+可以看到，在ACTION_UP后仍然触发了onClick()方法。

@@ -1,0 +1,1 @@
+除了用AIDL还可以用Messenger通信

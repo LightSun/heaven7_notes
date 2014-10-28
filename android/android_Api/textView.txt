@@ -1,0 +1,15 @@
+
+【TextView属性详解】
+
+http://www.cnblogs.com/error404/archive/2011/11/16/2251593.html
+
+
+【Textview 使用html的内容】
+
+1,strings.xml中使用实体数据 <![CDATA[   ]]> , eg:
+
+ <string name="hello"><![CDATA[<b>The Awesome Sliding Up Panel</b><br/> Brought to you by<br/><a href="http://umanoapp.com">http://umanoapp.com</a>]]></string>
+
+
+2,设置textView内容
+    tv.setText(Html.fromHtml(getString(R.string.hello)));

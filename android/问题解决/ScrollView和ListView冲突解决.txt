@@ -1,0 +1,54 @@
+【第一种方式】
+1.public class Utility {  
+
+.    public static void setListViewHeightBasedOnChildren(ListView listView) {  
+03.        ListAdapter listAdapter = listView.getAdapter();   
+04.        if (listAdapter == null) {  
+05.            // pre-condition  
+06.            return;  
+07.        }  
+08.  
+09.        int totalHeight = 0;  
+10.        for (int i = 0; i < listAdapter.getCount(); i++) {  
+11.            View listItem = listAdapter.getView(i, null, listView);  
+12.            listItem.measure(0, 0);  
+13.            totalHeight += listItem.getMeasuredHeight();  
+14.        }  
+15.  
+16.        ViewGroup.LayoutParams params = listView.getLayoutParams();  
+17.        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));  
+18.        listView.setLayoutParams(params);  
+19.    }  
+20.}  
+
+【第2种方式】 重写GridView/ListView
+
+public class AutoResizeGridView extends GridView {
+
+	public AutoResizeGridView(Context context, AttributeSet attrs) {
+		super(context, attrs);
+	}
+
+	public AutoResizeGridView(Context context) {
+		super(context);
+	}
+
+	public AutoResizeGridView(Context context, AttributeSet attrs, int defStyle) {
+		super(context, attrs, defStyle);
+	}
+
+	@Override
+	public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+		int expandSpec = MeasureSpec.makeMeasureSpec(Integer.MAX_VALUE >> 2, MeasureSpec.AT_MOST);
+		super.onMeasure(widthMeasureSpec, expandSpec);
+	}
+}
+
+【第三种方式】  
+
+requestDisallowInterceptTouchEvent(true);
+请求不拦截触摸事件
+
+
+
+

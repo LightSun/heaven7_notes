@@ -1,0 +1,54 @@
+void sendInstalledNotification(String fileName, String packageName) {
+    NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+
+    String name = "";
+    try {
+        name += fileName.substring(fileName.lastIndexOf(".") + 1);
+    } catch (Exception e) {
+        Log.e("NewThemeChooser", "Invalid Package name");
+        e.printStackTrace();
+    }
+    name += " Installed";
+    Notification notification = new Notification(R.drawable.ic_launcher_9, name , System.currentTimeMillis());
+
+    Intent intent = new Intent(mContext , ThemeInfo.class);
+    Bundle bundle = new Bundle();
+    bundle.putString("apkid", packageName);
+    bundle.putBoolean("isApplied", false);
+    intent.putExtra("bundle", bundle);
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+    PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, intent, 0);
+
+    notification.setLatestEventInfo(mContext, name, "Click to Apply Theme", pendingIntent);
+    notification.flags = Notification.FLAG_AUTO_CANCEL;
+
+    Log.d("NewThemeChooser__:ThemeChangeReceiver" , "hascode : " + packageName.hashCode() + " installed " + packageName);
+    notificationManager.notify(packageName.hashCode(), notification);
+
+}
+
+
+//为了多个notifycation被点击时传递不同的数据，这里第2个参数需要用唯一的Int值，以确保（否则多个//Notication会传递同样的数据 ）
+PendingIntent pendingIntent = PendingIntent.getActivity(mContext, packageName.hashCode(), intent, 0);
+
+
+
+//点击notifycation时,使得不崩溃（或者数据丢失）
+NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+        .setSmallIcon(R.drawable.notification)
+        .setContentTitle("title")
+        .setContentText("message");
+        builder.setOngoing(true);
+        Intent resultIntent = new Intent(this,NotificationActivity.class);///!!!!
+        resultIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT); 
+        builder.setContentIntent(resultPendingIntent);
+        notificationManager.notify(1, builder.build());
+
+
+//点击Notifacation时--启动最后用户所在的activity
+http://stackoverflow.com/questions/6575730/notification-to-restore-a-task-rather-than-a-specific-activity
+
+
+

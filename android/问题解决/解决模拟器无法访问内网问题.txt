@@ -1,0 +1,34 @@
+1,adb root
+2,adb remount 
+3,adb shell (进去之后以命令方式修改Hosts) 
+
+
+(手机修改hosts后需要重启)
+
+
+C:\Users\Administrator>adb root
+adbd is already running as root
+
+C:\Users\Administrator>adb remount
+remount succeeded
+
+C:\Users\Administrator>adb shell
+# echo -e \\n >> /system/etc/hosts
+echo -e \\n >> /system/etc/hosts
+# echo 10.16.73.22 shenguanpu.wghelper.1360.com >> /system/etc/hosts
+echo 10.16.73.22 shenguanpu.wghelper.1360.com >> /system/etc/hosts
+# cat /system/etc/hosts
+cat /system/etc/hosts
+127.0.0.1                   localhost
+
+
+10.16.73.22 shenguanpu.wghelper.1360.com
+#
+
+
+//子佳host
+echo 10.16.73.30  luzijia.wgweb.m.wan.360.cn >> /system/etc/hosts
+echo 10.16.73.30  luzijia.m.wan.360.cn  >> /system/etc/hosts
+
+
+

@@ -1,0 +1,212 @@
+
+
+editText: 多行和限制内容
+android:inputType="textMultiLine"
+android:digits="0123456789"
+
+
+解决MainActivityGroup,中activityA中有EditText时，跳转到其他activity又返回activityA时，EditText不能删除输入的字符.的Bug
+
+container.addView(getLocalActivityManager().startActivity(
+ac.getClass().getName(),new Intent(this,ac.getClass())).
+getDecorView());
+
+
+PopupWindow  -- 》 unable to add windwo ...badToken... 原因activity还没有运行，
+         在onWindowFocusChanged()里面显示就行了
+
+
+ListView/GridView 系统默认点击背景为黄色的小bug修改
+lv.setSelector(new ColorDrawable(Color.TRANSPARENT));
+
+
+androi String特殊字符
+http://hi.baidu.com/jwq359699768/item/ac7a9bf84ad7fdd242c36ac6
+
+PopupWindow back键处理
+pw.setFocusable(true);
+
+文本下划线
+gw_tv_find_password.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG); // 下划线
+
+
+在EditText中显示光标，通过反射
+if (android.os.Build.VERSION.SDK_INT <= 10) {
+ctsKeywordEdt.setInputType(InputType.TYPE_NULL);
+} else {
+getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+try {
+Class<EditText> cls = EditText.class;
+Method setSoftInputShownOnFocus;
+setSoftInputShownOnFocus = cls.getMethod("setSoftInputShownOnFocus", boolean.class);
+setSoftInputShownOnFocus.setAccessible(true);
+setSoftInputShownOnFocus.invoke(ctsKeywordEdt, false);
+ 
+} catch (Exception e) {
+e.printStackTrace();
+}
+}
+
+
+高版本android系统 出现等待中...对话框，在触摸时会取消bug,
+解决： dialog.setCanceledOnTouchOutside(false);
+
+
+PopupWindow 泄露
+原因: 在activity.finish()之前，没有关闭挂载到activity的PopupWindow
+
+
+
+Failed to fectch URl https://dl-ssl.google.com/android/repository/addons_list.xml, reason: Connection to https://dl-ssl.google.com refused
+解决办法来源于:code.google.com
+用notepad打开C:WINDOWSsystem32driversetc中的hosts文件
+在最后一行添加74.125.237.1 dl-ssl.google.com
+成功解决问题。(GooglePlay 开vpn)
+
+
+pw_server.setBackgroundDrawable(new BitmapDrawable()); 
+//设置背景表示相应物理back去dismiss PopupWindow，但按home键出去后再进去，再物理back多点几次仍会pw.dismiss()
+
+
+ActivityGroup慎用。 多数Bug都有可能由他引起. 比如全屏。在普通activity中无用，在ActivityGroup中才有用.
+public static void requestFullscreen(Activity pActivity) {
+		final Window window = pActivity.getWindow();
+		window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		window.clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+		window.requestFeature(Window.FEATURE_NO_TITLE);
+	}
+
+
+多写debug信息，便于以后调试(否则可能需要花多倍时间去找bug)
+
+
+横版xml布局文件不可能单独存在，即只能和竖版xml文件同时存在，否则报资源找不到异常
+
+
+当用activity做窗口（类似PopupWindow）时,别用setContentView(View.inflate..);否则窗口失效
+
+
+阻止切屏时onCreate重新调用
+android:configChanges="orientation|keyboardHidden|screenSize"  (api 13以上screenSize必须要)
+
+
+游戏配置Activity launchMode= singleTask/singleInstance --- 充值过程中若按home键去查看验证码，则再进去时只能看到之前的activity了(singleTop则无影响)
+  ...多个activity有此配置则主activity为主
+
+
+webView细节
+http://blog.csdn.net/zreodown/article/details/7534374
+
+
+removeMessages(msg.what); //当永不再用这个msg.what时才用
+
+
+if 时小心; 空执行
+
+
+
+代码布局默认id=-1,小心... 所以代码布局需要手动设置setId(..).
+
+minEms和maxEms设置控件为 指定个数字符的宽度
+
+logcat显示的日志可能不准确（长度过长时可能有截断）
+
+
+android 低版本不支持View.setAlpha(float alpha),eg:2.3
+
+List<AdvertisementCount> list = adCountDao.findByCondition( null,
+    			CountDBhelper.COL_AD_MAIN_ID +"= ?", new String[]{adid+adpid+imgid},null);
+ //where条件里面必须有" = ? "
+
+
+android:exported="false" 指示该Receiver是否能够接收来自应用程序外部的消息.false标识不能
+
+
+//监听包安装，替换并获取packageName
+@Override
+	public void onReceive(Context context, Intent intent) {
+		// TODO Auto-generated method stub
+
+		String action = intent.getAction();
+		String packageName = intent.getData().getSchemeSpecificPart();
+		if(Intent.ACTION_PACKAGE_ADDED.equals(action)){
+			Logger.v(TAG, "监听到了包的安装: packageName = "+packageName);
+			SDKUtil.lauchAppByPackageName(context, packageName);
+			
+		}else if(Intent.ACTION_PACKAGE_REPLACED.equals(action)){
+			Logger.v(TAG, "监听到了包的替换: packageName = "+packageName);
+			SDKUtil.lauchAppByPackageName(context, packageName);
+		}
+	}
+
+
+* IntentService实现了任务排队的机制, 且工作在单独的线程(即可进行耗时操作),但不能长期在后台
+* service 运行于主线程，可长期驻留后台
+
+
+当系统清理内存后,service可复活，但所有的非基本类型,String,parcelable的数据类型的数据将不会被保留下来
+即只保留基本数据类型，String.和parcelable类型的数据
+
+
+外部包的安装。所有具有Intent.ACTION_PACKAGE_ADDED动作的 接收者都能收到
+
+
+10-28 17:30:55.716: E/AndroidRuntime(11966): java.lang.IllegalStateException: Circular dependencies cannot exist in RelativeLayout
+ 原因：同一个页面有重复id
+
+base64之后可能有换行符。需要过滤掉
+
+
+webview 和js交互注意
+  android 4.2以上需要加上注解@JavascriptInterface ,eg: 
+
+  wv.addJavascriptInterface(new Object() { 
+            //window.adhtml5.close()
+			@JavascriptInterface //4.2以上必须加上这个注解
+			public void close() { 
+				mHandler.postAtFrontOfQueue(new Runnable() {
+						@Override public void run() {
+							Logger.v(TAG, "接收到js消息...关闭activity...");
+							finish();
+					}
+				});
+            } 
+
+        }, "adhtml5");  // js调用window.adhtml5.close()
+
+国外文章: http://stackoverflow.com/questions/14031635/android-4-2-1-webview-and-javascript-interface-breaks
+
+
+ Unable to execute dex: Multiple dex files define 解决方法
+http://blog.csdn.net/mxlxiao7/article/details/8978930
+
+
+
+自己的应用被替换时,自己内部的Receiver会先接收到卸载--》然后replace
+
+
+如果当前Activity没有设置android:configChanges属性,或者是固定横屏或竖屏模式,则不需要加入.
+
+         <activity android:name="net.gamewave.ads.platform.AdControllerActivity" 
+                  android:configChanges="keyboardHidden|orientation|screenSize|navigation"> 
+           </activity>  
+加上之前的android:configChanges， 锁屏-->onStop(),解锁 onStart(),onResume()
+
+
+webview与js交互
+http://www.cnblogs.com/oakpip/archive/2011/04/10/2011165.html
+
+
+
+监听网络状态改变
+ <receiver 
+        android:name="net.gamewave.ads.receiver.ConnectionChangeReceiver" 
+        android:label="NetworkConnection">
+        <intent-filter>   
+              <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>   
+        </intent-filter>
+</receiver>
+
+
+textView 超链接去掉下划线样式
+http://orgcent.com/android-textview-no-underline-hyperlink/

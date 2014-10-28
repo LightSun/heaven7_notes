@@ -1,0 +1,40 @@
+http://www.eoeandroid.com/thread-280386-1-1.html
+
+
+DiskLruCache是Android提供的一个管理磁盘缓存的类。该类可用于在程序中把从网络加载的数据
+保存到磁盘上作为缓存数据，例如一个显示网络图片的gridView，可对从网络加载的图片进行缓存，
+提高程序的可用性。
+
+一.文件
+
+例如对于一组从网络加载的图片进行缓存，则在DiskLruCache的工作目录下面，可以看到如下所示
+的文件：
+
+前8行是对八张图片的缓存文件，第9行的文件叫journal，它相当于该缓存的日志文件，改文件的格
+式如下所示：
+
+libcore.io.DiskLruCache
+1
+100
+2
+
+CLEAN 3400330d1dfc7f3f7f4b8d4d803dfcf6 832 21054
+DIRTY 335c4c6028171cfddfbaae1a9c313c52
+CLEAN 335c4c6028171cfddfbaae1a9c313c52 3934 2342
+REMOVE 335c4c6028171cfddfbaae1a9c313c52
+DIRTY 1ab96a171faeeee38496d8b330771a7a
+CLEAN 1ab96a171faeeee38496d8b330771a7a 1600 234
+READ 335c4c6028171cfddfbaae1a9c313c52
+READ 3400330d1dfc7f3f7f4b8d4d803dfcf6
+
+前5行分别为一个常量字符串：libcore.io.DiskLruCache，该DiskLruCache的版本，应用程序的版本，
+每个条目中保存值的个数，以及一个空行。
+
+该文件中，随后记录的都是一个entry的状态。每行包括下面几项内容：一个状态，一个key，和可
+选择的特定状态的值。
+DIRTY：追踪那些活跃的条目，它们目前正在被创建或更新。每一个成功的DIRTY行后应该跟随一个
+       CLEAN或REMOVE行。DIRTY行如果没有一个CLEAN或REMOVE行与它匹配，表明那是一个临时
+       文件应该被删除。
+CLEAN：跟踪一个发布成功的entry，并可以读取。一个发布行后跟着其文件的长度。
+READ：跟踪对LRU的访问。
+REMOVE：跟踪被删除的entry。

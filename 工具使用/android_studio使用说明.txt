@@ -1,0 +1,58 @@
+
+【快捷键】
+
+ctrl+shift+N    打开任意文件
+ctrl+space       代码完成（like导包？）-- 也可用于给定义的类型快速命名
+alt+f7           快速定位Class\Method\变量
+ctrl+Q           查看文档
+ctrl+8 或者ctrl+鼠标  查看定义
+
+ctrl+f12   导航当前文件的结构  enter/f4 导航到选择的成员
+shift+f6   重构/重命名
+
+ctrl+o     重写方法    注意：ctrl+i
+
+ctrl+shift+space   代码补充完整
+tab                高亮当前选择的
+shift+ click       关闭当前的选项
+
+alt + insert      生成get/set/tostring或者其他 
+
+escape            移动焦点到当前editor
+shift  + escape   移动焦点到当前editor并隐藏当前
+f12               移动焦点从当前到上一个  
+
+ctrl+alt+T        选中语句后补充的快捷键比如if/try catch 
+
+ctrl + alt + B    导航当前抽象方法的实现
+ctrl + alt + v    复杂语句分成多个语句
+
+ctrl + f1         打开指定元素的详细文档
+
+ctrl + slash      单行注释
+ctrl + shift + slash 多行注释  
+
+ctrl+shift+space    强制转换相关
+tab                 itar -- 循环语句
+  
+ctrl + p                  列出方法参数类型
+ctrl + shift + backspace  回退到上一个place
+alt + Q                   查看方法定义
+
+ctrl + e             查看最近访问的文件
+f2/ctrl+f2           跳转到语法错误的地方
+
+Ctrl+Alt+Up/Ctrl+Alt+Down  跳转到编译错误
+ctrl + j                代码补全
+alt + up /alt + down    在方法之间跳转
+
+ctrl + shift +j     将2行变成一行并且移除多余的空格
+ctrl + shift + v    选择和插入剪贴板内容
+ctrl + n             查看层级关系
+
+右击  增加断点/禁用断点
+ctrl + p/ctrl+ Q /ctrl+B   内容编辑帮助（有点像代码补全） 
+
+ 
+
+To quickly select the currently edited element (class, file, method or field) in any view (Project view, Structure view or other), press Alt+F1.

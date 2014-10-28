@@ -1,0 +1,6 @@
+android 4.4.2  
+       app ops已失效。http://www.so.com/s?q=app%20ops&ie=utf-8&src=se6_newtab
+
+android 4.4 
+
+       短信拦截已失效(只能有一个默认的短信应用才能拦截短信)

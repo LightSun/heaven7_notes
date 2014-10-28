@@ -1,0 +1,19 @@
+http://blog.csdn.net/changemyself/article/details/10020201
+
+
+设置启动动画
+Intent intent = new Intent();  
+intent.setClassName(cxt,"com.test.mrn.android.route.RouteDemoActivity");//打开一个activity  
+cxt.startActivity(intent);  
+                    
+cxt.overridePendingTransition(R.anim.activity_open,0); 
+
+
+设置关闭动画
+@Override  
+public void finish() {  
+    // TODO Auto-generated method stub  
+    super.finish();  
+    //关闭窗体动画显示  
+    this.overridePendingTransition(R.anim.bottom_end,0);  
+}  

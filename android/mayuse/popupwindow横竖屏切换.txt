@@ -1,0 +1,9 @@
+android popupwindow 横竖屏切换问题
+在使用popupwindow时，如果手机从横屏转为竖屏，或者反之，往往会影响popupwindow里面的内容。
+横竖屏切换时，acvitiy会重绘，可以在minifest.xml中配置
+android:configChanges="orientation|keyboardHidden"
+那切换时自然要修改Popupwindow的窗口布局，如果从竖屏转到横屏那么肯定样子还是没有变化，
+其实这个时候横竖已经变了。
+
+解决方法：
+重写activity onConfigurationChanged方法，然后把popupwindow dismiss ,再重新弹出。

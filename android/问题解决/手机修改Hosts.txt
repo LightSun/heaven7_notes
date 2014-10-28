@@ -1,0 +1,32 @@
+C:\Users\Administrator>adb shell
+shell@flo:/ $ su
+su
+root@flo:/ # mount -0 remount,rw -t yaffs2 /dev/block/mtdblock3 /system
+mount -0 remount,rw -t yaffs2 /dev/block/mtdblock3 /system
+mount: invalid option -- 0
+mount: invalid option -0
+1|root@flo:/ # vi /etc/hosts
+vi /etc/hosts
+sh: vi: not found
+127|root@flo:/ # mount -o remount,rw -t yaffs2 /dev/block/mtdblock3 /system
+mount -o remount,rw -t yaffs2 /dev/block/mtdblock3 /system
+root@flo:/ # echo -e \\n >> /system/etc/hosts
+echo -e \\n >> /system/etc/hosts
+root@flo:/ # echo 10.16.73.13 lijingan.youxi.com >> /system/etc/hosts
+echo 10.16.73.13 lijingan.youxi.com >> /system/etc/hosts
+root@flo:/ # cat /system/etc/hosts
+cat /system/etc/hosts
+127.0.0.1                   localhost
+
+
+10.16.73.30 luzijia.wgweb.m.wan.360.cn
+10.16.73.30 luzijia.m.wan.360.cn
+
+
+10.16.73.13 lijingan.youxi.com
+root@flo:/ #
+C:\Users\Administrator>
+
+È»ºóÖØÆô
+19.16.73.22 luzijia.bbs.youxi.com
+echo 19.16.73.22 luzijia.bbs.youxi.com >> /system/etc/hosts

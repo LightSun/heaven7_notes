@@ -1,0 +1,192 @@
+
+
+【UI性能类】 
+ 
+1.UI线程内不能做耗时操作，绘图以外操作建议每帧控制在10毫秒之内。
+2.避免频繁查找资源，如findViewById
+3.避免频繁创建对象 ,如Rect、Paint、Matrix等
+4.避免过度刷新：如频繁调用notifyDataSetChanged等。     
+5.Adapter需使用复用机制，不能每次getView时都inflate
+6.Layout应尽量扁平化，不要超过5个层次。
+7.不得直接使用大尺寸图片（如超过屏幕尺寸需要预缩放
+
+
+
+【安全】
+
+1.对于用户密码、重要的加密key等信息不得在本地保存。如果确需保存，不得以明文或者简单Hash（如MD5）形式保存。简单Hash有很大概率可以利用彩虹库碰撞出来。至少要使用用户信息和一个本地独特的信息在一起做Hash，比如密码+IMEI。这样可以极大降低本碰撞出的几率。
+
+
+2.provider提供者要对读取者做身份验证，常用方法是获取当前调用者的uid，反查调用者的包名，获取该包的签名做验证。
+
+
+3.对于onreceive和oncreate等过程传递的数据没有办法获取身份，那么就需要在业务逻辑上避免用此类接口控制重要逻辑.  3, 不需要外部提供的接口, 注意加上不导出的属性, 不对外暴露接口
+
+
+4.动态加载jar包时一定要有某种安全校验机制（如：来源，签名校验，md5（不推荐））
+
+
+5.用SharedPreference来保存数据时，对于敏感信息的key尽量使用缩写或者其他不易知其意的命名，比如：KEY_PHONENUMBER, KEY_SERVER_IP_ADDRESS，应该改为KEY_P_N, KEY_S_I_A等；
+
+
+6.如果AndroidManifest中的activity声明了intent-filter，则默认exported为true。如果禁止外部调用需要设置为exported=false 
+
+
+
+耗电类 
+ 
+
+1.使用wakelock通常是为了保证在某段代码中，CPU不会休眠。那么，运行完这段代码之后，必须保证要release wakelock
+
+   出问题的情况可能是：
+
+-      Acquire wakelock后，运行的代码逻辑复杂，在某些逻辑分支条件下，没有release
+
+-      或者出现异常，而异常处理流程中没有release
+
+-      或者类似卫士的多进程环境下，可能出现acquire和release不是在同一个进程中调用的bug
+
+2.  注册SensorManager的事件，会导致系统无法进入休眠状态，所以在收到锁屏通知后，要注销掉SensorManager的事件。
+
+
+
+【内存问题】
+
+
+1.jni与java 变量传递 注意用相应的名字空间reference引用 以及释放， 否则内存泄漏
+
+jni内存泄漏问题细节描述
+
+var = env->NewObject(......);
+// 加个引用
+params = env->NewGlobalRef(var);
+// 传给java层去使用
+env->CallVoidMethod(......, params......);
+// 如果这个东西不是在java层永久引用的， 注意在函数调用结束时释放这个引用
+env->DeleteGlobalRef(params);
+这种东西 2.2和以后平台是有差异的，2.2中不要这个步骤是因为本身没有Reftable这种机制。
+
+     2.  对称关闭问题
+
+除了常见的input output streame需要有open和close之外，安卓的cursor，parcel，bitmap都需要进行close或者recycle，在handle中使用的message尽量使用getmessage方法，避免内存泄漏。
+
+     3.  创建、使用Bitmap时必须考虑回收时机问题，主动调用recycle 或使用图片cache以 防止出现OOM。
+
+解释如下：http://blog.chinaunix.net/uid-20771867-id-3351053.html
+
+当然如果用的图片很少，占用的内存也很少的时候就没有必要手动调用recycle方法来回收内存了，GC会在合适的时候回收这些内存的。只有图片很多占用内存很多的时候才需要我们主动调用recycle方法，否则很有可能出现OOM异常的。
+
+     4.  在非必要情况下，Context尽量使用ApplicationContext, 而不要用Activity Context； 不应在函数调用中频繁传递Activity的实例，否则处理不好易导致内存泄漏。
+
+     5.  使用Context（Activity）做Callback时，尽量使用软引用或弱引用；
+
+     6.  在通知栏显示提示的客户端产品需注意：Android 直到 4.1.3 之前的版本，通知栏 API 都存在内存泄露 BUG，反复调用 NotificationManager.notify 方法会造成手机死机重启。绕过此 BUG 的方法是每次调用 notify 时都必须 new 一个新的 RemoteViews。此问题测试时不容易发现，通常是到了用户手里，用了几天之后发现手机越来越慢，最后卡死、重启，而且用户反馈问题时一般只会说“装了360 XXX之后手机越来越慢，卸了重启就好了”，难以定位问题。所以必须在代码检查阶段就发现这类错误用法并纠正。
+
+     7.  Context 不能静态
+
+
+
+【日志】
+要点一： 避免在Release产品的二进制文件中包含日志字符串。如果确实需要，则应该使用无意义的字符串，增加竞争对手逆向难度，并且需要经过TC和安全部门确认。
+
+要点二： 不要在Release产品中输出日志。如果确实需要，应经过TC和安全部门确认。并且绝对不可以输出用户隐私相关信息。比如手机号、账号、密码等等，甚至加密后的密文也不可以。也不要输出任何产品的关键信息，避免信息泄漏和被利用。
+
+案例：近期安全审核云盘的产品发现存在logcat日志输出用户QID和QT串的情况，此问题非常严重，竞品和木马可以直接从logcat中获取360用户的隐私信息，控制360账户！
+
+ 
+
+技巧一：日志代码可以通过条件变量块包装起来。产品编译应该通过编译工具生成（比如ant）。编译工具在生成时会自动将BuildConfig.DEBUG设定为false，这样编译器在编译时会自动优化掉日志块代码。例如：
+
+技巧二：写日志的常量开关不要封装在函数里面，要用常量开关直接包围日志语句。例如，如下是错误的写法：
+
+技巧三：避免在log里面对变量进行赋值，即使该变量不影响业务逻辑也尽量避免。例如：
+        Log.e(TAG, "loop i=" + (i++));
+
+【性能】
+
+
+====不要在UI中进行耗时的操作=====
+
+1. 开启严格模式（Strict Mode）进行检测
+
+2. 常见耗时操作：
+
+- 跨进程操作。如读Provider；
+
+- 读写SharedPref；
+
+- 文件操作；
+
+- 数据库操作；
+
+- 动态加载dex，apk；
+
+- 解压，加载大量图片。
+
+3.  注意Activity，Service，Provider，Receiver都是运行在主线程的。Service容易被误认为是运行在后台线程的，实际上Service本身运行在主线程中，如果有后台任务，需要开发者自己创建和维护后台线程 
+
+ 
+
+====卫士启动时的初始化=======
+
+1. 模块自身要能支持延迟加载。在入口函数处对初始化状态进行判断。
+
+2. 不要自行创建AsyncTask/SafeAsyncTask，或创建Thread做初始化操作。将任务添加到卫士统一的UIProcessStartUpTaskHelper中。使用要点：
+
+       - 定义TASK ID和依赖关系
+
+       - 确定执行时间点：SplashShown，MainScreenShown
+
+ 
+
+ASyncTask的使用注意事项：
+
+1.  ASyncTask的创建和回调都必须在UI线程中执行
+
+注：如果在非UI线程中创建AsyncTask的场景中，可能出现NoClassDefFound的问题。（原因是第一个AsyncTask必须在UI线程创建。） 不要采用网上介绍的workaround，即通过在Application onCreate时创建一个空实例来绕过这个问题：
+
+new AsyncTask<Void, Void, Void>() {
+
+            @Override
+
+            protected Void doInBackground(Void... params) {
+
+                return null;
+
+            };
+
+}.execute(null);
+
+http://stackoverflow.com/questions/6968744/getting-noclassdeffounderror-android-os-asynctask
+
+https://groups.google.com/forum/#!topic/android-developers/jtxeoVibYlo
+
+2.  在Activity中使用ASyncTask，回调更新UI时，要检查activity是否已经finish
+
+3.  所有的ASyncTask都在一个或几个公共线程池执行。适用于耗时不太长（几秒内）的临时任务，如加载图片，网络操作等。对于长时间的后台任务，应采用其它机制。
+
+4.  建议使用卫士封装的SafeAsyncTask。SafeAsyncTask在线程池执行。注意考虑线程安全问题。
+
+注：系统的AsyncTask 在安卓3.0以后是串行执行的。 多个网络任务或其他操作如果用AsyncTask， 会阻塞。参见 http://developer.android.com/reference/android/os/AsyncTask.html
+
+When first introduced, AsyncTasks were executed serially on a single background thread. Starting with DONUT, this was changed to a pool of threads allowing multiple tasks to operate in parallel. Starting with HONEYCOMB, tasks are executed on a single thread to avoid common application errors caused by parallel execution.
+
+ 
+
+ 
+ 
+
+
+【杂项】
+
+1.Activity退出时，应该终止在Activity中启动的局部线程（也包括AsyncTask等异步任务）。
+
+2.废弃SharedPreferences的用法，保存设置不得再使用SharedPreferences。
+  只有在写单进程的小工具时才可以用SharedPreferences，否则会造成设置数据全部丢失的严重后果。
+  不要使用getDefaultSharedPreferences来跨进程写xml文件，容易造成配置的丢失
+
+3.不要将界面上显示的字符串写死在代码里，尽量使用资源文件    
+  原因：1 写死在代码里会增加别人逆向卫士代码的线索。2 不利于产品多语言化
+
+4.Fragment调用getActivity()需要判断是否非空。
+  Fragment子类的构造方法应该是无参的，设置属性要统一用setArguments()。

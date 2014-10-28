@@ -1,0 +1,70 @@
+【Android程序中的输入法控制】
+
+一、打开输入法窗口:
+InputMethodManager inputMethodManager imm= (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
+// 接受软键盘输入的编辑文本或其它视图
+imm.showSoftInput(submitBt,InputMethodManager.SHOW_FORCED);
+
+二、关闭出入法窗口
+InputMethodManager inputMethodManager imm= (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
+imm.hideSoftInputFromWindow(OpeListActivity.this.getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
+
+//接受软键盘输入的编辑文本或其它视图
+imm.showSoftInput(submitBt,InputMethodManager.SHOW_FORCED);
+
+三、如果输入法打开则关闭，如果没打开则打开
+InputMethodManager m=(InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+m.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+
+四、获取输入法打开的状态
+InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+boolean isOpen=imm.isActive();
+isOpen若返回true，则表示输入法打开
+
+【五，使输入法不遮盖Activity】
+
+Android界面技巧：当输入法调出时，如何让界面自动上移，使输入法不会遮挡到主界面(Activity) 
+方法很简单，就是修改AndroidManifest.xml文件，在Activity属性中加一条:
+
+android:windowSoftInputMode="adjustResize"
+
+
+
+==========================================================================================
+
+关于文本长度的监听
+
+private int maxLen = 12;
+	private int len = 0;
+	private int change_count;
+
+et_dialogEnter.addTextChangedListener(new TextWatcher() {
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				try {
+					len = et_dialogEnter.getText().toString().getBytes("gbk").length;
+					change_count = count;
+				} catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
+				}
+			}
+
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+			}
+
+			@Override
+
+			public void afterTextChanged(Editable s) {
+				if (len > maxLen) {
+					if (s.length() > 0) {
+						int pos = s.length() - change_count;
+						s.delete(pos, s.length());
+					}
+				}
+			}
+		});

@@ -1,0 +1,12 @@
+android update project -p <project> -t <target>
+
+
+多渠道打包@see D:\develop\android\eclipse_workplaces\workplace3\MalaysiaSelfTest
+    /build.xml  /custom_rules.xml    /local.properties
+
+
+ <target name="deploy" >
+
+
+
+到项目目录下： ant deploy 会自动生成apk

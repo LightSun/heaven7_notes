@@ -1,0 +1,2 @@
+API 11之前  android.text.ClipboardManager      
+API 11之后  android.content.ClipboardManager 

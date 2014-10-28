@@ -1,0 +1,50 @@
+ traceview是android自带性能分析的工具，可以分析出方法的执行时间，让我们知道哪里最耗时。
+
+用法很简单：
+
+   1，在oncreate方法里面加上：Debug.startMethodTracing();
+
+       在onstop方法里面加上：Debug.stopMethodTracing()；
+
+  2，在sdcard下面会生成一个trace文件。（记得在清单文件里面加上写sdcard的权限：<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>  ）、
+
+3，通过命令行来执行traceview，进入tools目录后，执行　traceview C:/tracefile/yourActivityTrace.trace
+
+   然后就生成了图形界面 ，  最后列出图形界面的一些字段含义：
+  Exclusive: 同级函数本身运行的时间
+Inclusive 就是说除统计函数本身运行的时间外再加上调用子函数所运行的时间
+ 
+Name：列出的是所有的调用项，前面的数字是编号，展开可以看到有的有Parent 和Children子项，就是指被调用和调用。
+Incl: inclusive时间占总时间的白分比
+Excl: 执行占总时间的白分比。
+Calls+Recur Calls/Total: 调用和重复调用的次数
+Time/Call: 总的时间。(ms)
+
+
+hprof (MAT)
+
+与C++的内存不同，C++的内存泄露是由于分配了内存给某程序但是又没有回收造成的。Java的内存泄露则是引用了一些垃圾对象，意思就是说程序引用了某些对象，但是又从来没有使用过。
+Jave中的引用分为3种：
+强引用：引用为空的时候，Java的垃圾回收器会处理。一般来说自己写的程序大部分都是强引用。
+软引用：堆内存不够的时候，Java的垃圾回收器会处理这类引用。
+弱引用：Jave的垃圾回收器每次都会回收这类引用。
+如何用MAT来分析，前提是Android开发和测试的工具安装完整，SDK，Eclipse：
+
+1.打开Eclipse
+2.选择 Help->Install New Software;
+3.在Work with中添加站点：http://download.eclipse.org/mat/1.0/update-site/（这个地址可能会变化，但是新的地址可以在官方网站上找到：http://www.eclipse.org/mat/downloads.php ）
+4.生成.hprof文件:插入SD卡（Android机器很多程序都需要插入SD卡），并将设备连接到PC，在Eclipse中的DDMS中选择要测试的进程，然后点击Update Heap 和Dump HPROF file两个Button。
+.hprof 文件会自动保存在SD卡上，把 .hprof 文件拷贝到PC上的\ android-sdk-windows\tools目录下。这个由DDMS生成的文件不能直接在MAT打开，需要转换。
+运行cmd打开命令行，cd到\ android-sdk-windows\tools所在目录，并输入命令hprof-conv xxxxx.hprof yyyyy.hprof，其中xxxxx.hprof为原始文件，yyyyy.hprof为转换过后的文件。转换过后的文件自动放在android-sdk-windows\tools 目录下。
+OK，到此为止，.hprof文件处理完毕，可以用来分析内存泄露情况了。
+5.打开MAT：
+在Eclipse中点击Windows->Open Perspective->Other->Memory Analysis
+6.导入.hprof文件
+在MAT中点击 File->Open File,浏览到刚刚转换而得到的.hprof文件，并Cancel掉自动生成报告,点击Dominator Tree，并按Package分组，选择自己所定义的Package 类点右键，在弹出菜单中选择List objects->With incoming references。
+这时会列出所有可疑类，右键点击某一项，并选择Path to GC Roots->exclude weak/soft references,会进一步筛选出跟程序相关的所有有内存泄露的类。据此，可以追踪到代码中的某一个产生泄露的类。
+转自：http://blog.csdn.net/moruihong/article/details/7677128
+ 
+附注：
+这个地址改了：
+http://download.eclipse.org/mat/1.0/update-site/ ->
+http://archive.eclipse.org/mat/1.0/update-site/

@@ -1,0 +1,35 @@
+
+
+gradient   -- 对应颜色渐变。 startcolor、endcolor就不多说了。 android:angle 是指从哪个角度开始变。
+solid      --  填充。
+stroke   --  描边。
+corners  --  圆角。
+padding   -- 定义内容离边界的距离。 与android:padding_left、android:padding_right这些是一个道理。
+ 
+ 
+ 
+ 
+上面这些不是本讲重点。 本讲的重点是这些xml中属性，与Java类的对应关系， 以及如何使用Java类写出上面一样的效果！
+ 
+首先来看对应关系：
+ 
+父节点 shape   --   ShapeDrawable
+ [子节点] gradient   --  
+ [子节点] padding   --   
+ [子节点] corners   --   setCornerRadius 、setCornerRadii 
+ [子节点] solid       --    
+ [子节点]  stroke   --   setStroke 
+ [子节点]  size --   setSize
+ 
+发现只有几个是可以对应的~~ 看来通过Java代码来实现上述是行不通的..
+
+示例:
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+	<gradient
+		android:startColor="#70222222"
+		android:centerColor="#70222222"
+		android:endColor="#70EEEEEE"
+		android:angle="90" />
+
+	<stroke android:width="1dp" android:color="#70333333" /> 
+</shape>

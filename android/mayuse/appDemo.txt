@@ -1,0 +1,3 @@
+service运行于独立的进程中
+ <service android:name=".app.IsolatedService" android:isolatedProcess="true"
+                android:enabled="@bool/atLeastJellyBean" />

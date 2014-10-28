@@ -1,0 +1,48 @@
+【1, webview点击焦点框的问题】
+
+当在android WebView的节点上添加onClick（js）事件后，点击该节点会出现黄色边框与android界面非常不协调（不添加点击事件不会产生，并且不愿使用js的touchStart、touchEnd方法，这两种方法容易多次执行函数），想去掉这种特殊效果使用css和java的一些方法都不达目的，不知那位高手有解决方案或指点迷津？
+
+解决办法：修改css3的代码
+
+.plane-div-icon::selection {
+    background:#ffffff;
+    color:#fff;
+}
+
+.plane-div-icon::-moz-selection {
+    background:#ffffff;
+    color:#fff;
+}
+
+类似这样，把选择的css改成没色底
+
+.plane-div-icon {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+
+【webview 】
+第一种： 
+    WebSetting settings = webView.getSettings();
+    settings.setLayoutAlgorithm(LayoutAlgorithm.SINGLE_COLUMN);
+    把所有内容放在webview等宽的一列中。（可能会出现页面中链接失效）
+
+第二种：
+    settings.setUseWideViewPort(true);
+    settings.setLoadWithOverviewMode(true);
+
+
+第三种：
+    DisplayMetrics metrics = new DisplayMetrics();
+    getWindowManager().getDefaultDisplay().getMetrics(metrics);
+    int mDensity = metrics.densityDpi;
+
+
+    if (mDensity == 120) {
+              settings.setDefaultZoom(ZoomDensity.CLOSE);
+          }else if (mDensity == 160) {
+              settings.setDefaultZoom(ZoomDensity.MEDIUM);
+          }else if (mDensity == 240) {
+              settings.setDefaultZoom(ZoomDensity.FAR);
+          }
+

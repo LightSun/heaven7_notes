@@ -1,0 +1,22 @@
+?原文:http://www.cnblogs.com/qianxudetianxia/archive/2011/05/03/2029704.html#2843366
+
+
+无论程序是否正在运行，我们都要能通知到客户，我们需要一个独立进程的后台服务。
+
+我们需要一个独立进程的后台服务。
+? ? ?
+在AndroidManifest.xml中注册Service时，有一个android:process属性，如果这个属性以"."开头，
+则为此服务开启一个全局的独立进程，如果以":"开头则为此服务开启一个为此应用私有的独立进程。
+举个具体的例子吧，我们新建了一个 Application,创建了主进程com.cnblogs.tianxia，那么:
+
+
+全局的com.cnblogs.tianxia.message的独立进程
+<service android:name=".service.MessageService" 
+android:label="消息推送" 
+android:process=".message" 
+/>
+
+
+下面会创建一个应用私有的com.cnblogs.tianxia:message的独立进程
+<service android:name=".service.MessageService"
+ android:label="消息推送" android:process=":message" />

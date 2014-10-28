@@ -1,0 +1,15 @@
+当要删掉系统自带的某款应用的apk，在终端命令 adb remount 之后，命令终端显示
+remount failed: Operation not permitted。adb remount 失败。
+解决方法：
+
+1、adb shell
+2、su //切换到根用户
+3、mount -o rw,remount -t yaffs2 /dev/block/mtdblock3 /system     //不同硬件平台会不一致，可以通过mount看一下/dev的路径和文件系统类型
+4、chmod 777 /system  //然后就可以修改system下任意文件的权限了
+  
+5、cd system
+6、chomd 777 app
+7、cd app
+8、chmod 777 XXX.apk  //XXX就是你要删除的系统里的应用名。
+9、 exit
+10、 rm XXX.apk     //这样你就可以删除你想要删除的apk了。

@@ -1,0 +1,14 @@
+【ListView 嵌套ViewPager】
+http://blog.csdn.net/zglslyg/article/details/8480460
+
+
+
+【ListView 自动打开上次保留的位置】
+
+Editor editor = prefs.edit();
+		editor.putInt("index", listView.getFirstVisiblePosition());
+		editor.putInt("top", listView.getChildAt(0) == null ? 0 : 
+                          listView.getChildAt(0).getTop());
+		editor.commit();
+//使用上次的位置
+lv.setSelectionFromTop(prefs.getInt("index", 0), prefs.getInt("top", 0));

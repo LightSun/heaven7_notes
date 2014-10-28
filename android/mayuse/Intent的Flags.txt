@@ -1,0 +1,47 @@
+Activity有四种加载模式：standard(默认)， singleTop， singleTask和 singleInstance。
+以下逐一举例说明他们的区别：
+
+standard：Activity的默认加载方法，即使某个Activity在Task栈中已经存在，另一个activity通过Intent跳转到该activity，同样会新创建一个实例压入栈中。例如：现在栈的情况为：A B C D，在D这个Activity中通过Intent跳转到D，那么现在的栈情况为： A B C D D 。此时如果栈顶的D通过Intent跳转到B，则栈情况为：A B C D D B。此时如果依次按返回键，D  D C B A将会依次弹出栈而显示在界面上。
+
+singleTop：如果某个Activity的Launch mode设置成singleTop，那么当该Activity位于栈顶的时候，再通过Intent跳转到本身这个Activity，则将不会创建一个新的实例压入栈中。例如：现在栈的情况为：A B C D。D的Launch mode设置成了singleTop，那么在D中启动Intent跳转到D，那么将不会新创建一个D的实例压入栈中，此时栈的情况依然为：A B C D。但是如果此时B的模式也是singleTop，D跳转到B，那么则会新建一个B的实例压入栈中，因为此时B不是位于栈顶，此时栈的情况就变成了：A B C D B。
+
+singleTask：如果某个Activity是singleTask模式，那么Task栈中将会只有一个该Activity的实例。例如：现在栈的情况为：A B C D。B的Launch mode为singleTask，此时D通过Intent跳转到B，则栈的情况变成了：A B。而C和D被弹出销毁了，也就是说位于B之上的实例都被销毁了。
+
+singleInstance：将Activity压入一个新建的任务栈中。例如：Task栈1的情况为：A B C。C通过Intent跳转到D，而D的Launch mode为singleInstance，则将会新建一个Task栈2。此时Task栈1的情况还是为：A B C。Task栈2的情况为：D。此时屏幕界面显示D的内容，如果这时D又通过Intent跳转到D，则Task栈2中也不会新建一个D的实例，所以两个栈的情况也不会变化。而如果D跳转到C，则栈1的情况变成了：A B C C，因为C的Launch mode为standard，此时如果再按返回键，则栈1变成：A B C。也就是说现在界面还显示C的内容，不是D。
+好了，现在有一个问题就是这时这种情况下如果用户点击了Home键，则再也回不到D的即时界面了。如果想解决这个问题，可以为D在Manifest.xml文件中的声明加上：
+
+<intent-filter>
+       <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+ </intent-filter>
+
+加上这段之后，也就是说该程序中有两个这种声明，另一个就是那个正常的根activity，在打成apk包安装之后，在程序列表中能看到两个图标，但是如果都运行的话，在任务管理器中其实也只有一个。上面的情况点击D的那个图标就能回到它的即时界面（比如一个EditText，以前输入的内容，现在回到之后依然存在）。
+
+PS：intent-filter中 <action android:name="android.intent.action.MAIN" />和 <category android:name="android.intent.category.LAUNCHER" />两个过滤条件缺一不可才会在程序列表中添加一个图标，图标下的显示文字是android:label设定的字符串。
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Intent的常用Flag参数：
+
+FLAG_ACTIVITY_CLEAR_TOP：例如现在的栈情况为：A B C D 。D此时通过intent跳转到B，如果这个intent添加FLAG_ACTIVITY_CLEAR_TOP标记，则栈情况变为：A B。如果没有添加这个标记，则栈情况将会变成：A B C D B。也就是说，如果添加了FLAG_ACTIVITY_CLEAR_TOP标记，并且目标Activity在栈中已经存在，则将会把位于该目标activity之上的activity从栈中弹出销毁。这跟上面把B的Launch mode设置成singleTask类似。
+
+FLAG_ACTIVITY_NEW_TASK：例如现在栈1的情况是：A B C。C通过intent跳转到D，并且这个intent添加了FLAG_ACTIVITY_NEW_TASK标记，如果D这个Activity在Manifest.xml中的声明中添加了Task affinity，并且和栈1的affinity不同，系统首先会查找有没有和D的Task affinity相同的task栈存在，如果有存在，将D压入那个栈，如果不存在则会新建一个D的affinity的栈将其压入。如果D的Task affinity默认没有设置，或者和栈1的affinity相同，则会把其压入栈1，变成：A B C D，这样就和不加FLAG_ACTIVITY_NEW_TASK标记效果是一样的了。      
+
+注意如果试图从非activity的非正常途径启动一个activity，比如从一个service中启动一个activity，则intent必须要添加FLAG_ACTIVITY_NEW_TASK标记。
+
+FLAG_ACTIVITY_NO_HISTORY：例如现在栈情况为：A B C。C通过intent跳转到D，这个intent添加FLAG_ACTIVITY_NO_HISTORY标志，则此时界面显示D的内容，但是它并不会压入栈中。如果按返回键，返回到C，栈的情况还是：A B C。如果此时D中又跳转到E，栈的情况变为：A B C E，此时按返回键会回到C，因为D根本就没有被压入栈中。
+
+ FLAG_ACTIVITY_SINGLE_TOP：和上面Activity的Launch mode的singleTop类似。如果某个intent添加了这个标志，并且这个intent的目标activity就是栈顶的activity，那么将不会新建一个实例压入栈中。
+
+ /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Activity的主要属性：
+
+allowTaskReparenting：设置成true时，和Intent的FLAG_ACTIVITY_NEW_TASK标记类似。
+
+alwaysRetainTaskStat:   如果用户长时间将某个task移入后台，则系统会将该task的栈内容弹出只剩下栈底的activity，此时用户再返回，则只能看到根activity了。如果栈底的activity的这个属性设置成true，则将阻止这一行为，从而保留所有的栈内容。
+
+clearTaskOnLaunch：根activity的这个属性设置成true时，和上面的alwaysRetainTaskStat的属性为true情况搞好相反。
+
+finishOnTaskLaunch：对于任何activity，如果它的这个属性设置成true，则当task被放置到后台，然后重新启动后，该activity将不存在了。
+

@@ -1,0 +1,6 @@
+drawable下的xml文件尽量不要和图片文件重名。否则有些工具比如cocos2d上会有问题。
+
+eg:
+
+
+gw_title_bg.xml引用了gw_title_bg.png这个图片时。最好让图片重命名为其他

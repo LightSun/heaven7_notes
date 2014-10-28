@@ -1,0 +1,206 @@
+原文地址：
+   http://blog.csdn.net/lhj0711010212/article/details/8980491
+
+通信分析
+Mallory TCP and UDP proxy，it sees all traffic and allows you to manipulate and fuzz it
+BurpSuit
+Charles
+ADVsock2pipe capture network data with tcpdump on Linux or iPhone/iPad to see the capture in (almost) real-time in Wireshark on windows
+Paros
+Fiddler windows
+webscarab
+tcpdump
+wireshark
+PonyDebugger remote network and data debugging for your native iOS app using Chrome Developer Tools
+WAPT web application load, stress and performance testing
+
+逆向分析
+反汇编
+smali/baksmali disassembler(smali mode)
+Dedexer disassembler(ddx mode)
+apktool
+radare the reverse engineering framework
+smiasm reverse engineering framework
+REDEXER  This tool is able to parse a DEX file into an in-memory data structure; to infer with which parameters the app uses certain permissions (we name this feature RefineDroid); to modify and unparse that data structure to produce an output DEX file (we name these features Dr. Android, which stands for Dalvik Rewriting for Android)
+Virtuous Ten Studio modification of android application windows
+AppInspect commercial software
+反编译
+dex2jar
+JD-GUI java decompiler 
+JAD java decompiler 
+ded
+soot java optimization framework
+Dava a tool-independent compiler for java
+apk-extractor 反编译工具 windows平台(用来查看java源码）
+JEB the interactive Android Decompiler commercial software
+AndroChef java Decompiler Information commercial software
+签名
+keytool/jarsigner (Sun java 签名）
+openssl
+signapk（Android签名）
+Auto-sign（Android签名）
+keytool-importkeypair
+AXMLPrinter2 AXML converter
+axml2xml AXML converter
+IDA Pro windows
+资源编辑工具
+AndroidResEdit windows
+apk-recovery recover main resources from apk file
+
+权限分析
+STOWAWAY A static analysis tool and permission map for identifying permission use in Android applications
+manitree AndroidManifest.xml security auditor
+
+动态分析
+Droidbox an Android system image, which can log and output behaviors of applications running in it.
+APIMonitor a tool which can automatically modify APK file and add log codes for sensitive APIS
+apk-view-tracer apk automated testing interface and event trigger tool for apk dynamic analysis (open-API for developer）
+
+
+静态分析
+APKInspector 重要
+androwam 检测Android APP中潜在的恶意行为
+otertool swiss army knife of android hacking
+apkanalyser 重要(用来查看smali）
+ART Android reverse tools
+FindBugs find bugs in java program
+Fortify SCA
+Agnitio 源码审查 windows
+PWD（Java source code analyzer. It finds unused variables, empty catch blocks, unnecessary object creation, and so forth）
+
+安全审计
+Androguard 重要,很多工具的基础
+mercury  a framework for exploring the Android platform to find vulnerabilities and share proof-of-content exploits
+ASEF android security evaluation framework
+AntiLVL subvert Android License Verification Library, Amazon Appstore DRM and Verizon DRM, also disables many anti-cracking and anti-tampering protection methods
+
+调试
+AndBug
+agdb an android cross platform gdb wrapper 
+Phone to Phone Android Debug Bridge
+Android保护
+APKFuscator a generic DEX file obfuscator and munger
+DexGuard obfuscator
+de4dot   .NET deobfuscator and unpacker written in C#
+
+sec-distros
+Santoku
+1.reverse engineering
+（1）Androguard 
+（2）AntiLvL 
+（3）APK Tool
+（4）smali/baksmali
+（5）Dex2jar/JD-GUI
+（6）Jasmin
+（7）Mercury 
+（8）Radare2
+（9）Bulb Security SPF
+2.wireless analyzers
+(1)Wireshark
+(2)TCPDUMP
+(3)DSniff
+(4)mitmproxy
+(5)dnschef
+(6)Chaaosreader
+3.penetration
+(1)BurpSuite
+(2)NMAP (zenmap)
+(3)SSL strip
+(4)w3af
+(5)ettercap
+AppUse Android Pentest Platform Unified standalone environment 
+OSAF Open source Android Forensics Toolkit (推荐）
+MobiSec(Slides)
+ARE android reverse engineering
+Android Tamer
+BackTrack Linux
+Android Data Extractor Lite
+
+在线分析 
+Anubis analyzing Unknown binaries(windows executable,android APK, suspicious URL)
+SandDroid an APK analysis sandbox 西安交通大学
+Mobile Sandbox  malicious behaviour analyze
+ComDroid a staic analysis tool for identifying application communication-based vulnerabilities (Intent: inter-application)
+Bytecode scanner  scan Android APP and report bytecode misusage which can cause your device to stuck in a boot loop
+Mobile Sandbox
+dexter
+VirusTotal analyzes suspicious files and URLs
+
+取证分析
+AF Logical 
+Sleuthkit
+BitPim
+DFF digital forensics framework
+LIME forensics linux memory extractor
+
+安全框架
+OWASP Mobile Security Project
+SEAndroid
+
+
+其他
+APK Downloader Downloader APK files from Android Market to PC
+Real APK Leecher Downloader APK files from Android Market to PC windows
+ExploitMe mobile android Labs APK漏洞演示
+Pandemobium collection of intentionally-vulnerable mobile applications
+TaintDroid realtime privacy monitoring on Smartphones
+AndroidXRef android源码查看
+OWASP GoatDroid training environment for educating developers and testers on Android security
+smartphonesdumbapps  analyze Android and iPhone applications as well as to run Fortify SCA scans on Android Java application source code
+cloring for smali files: emacs vim editplus
+dexInspector windows
+smart phones dumb apps tools from denim group for analyzing the security of smartphone applications
+seek for android SmartCard API
+Android scripting
+
+android安全网站
+kungfu
+android cracking
+Hendrik ADRIAN
+Strazzere
+VIAFORENSICS
+AndroidCrackme
+Security Compass Labs
+iSEC
+Intrepidusgroup
+SecurityLearn
+SecMobi Wiki
+Free Android sec tools, resources
+
+
+APK
+Android security list
+root tools
+Root Explorer 文件管理
+Busybox Pro
+su授权管理
+GameKiller, GameCIH, GameGuardian 内存修改
+Lucky Patcher
+ProxyDroid
+QuickSSHd
+DroidVPN 
+X-Ray Android vulnererabilities scanner
+c-ray Android application security scanner
+dSploit an android network penetration suite （需要root与busybox）
+FaceNiff Facebook session hijacking
+DroidSheep session hijacking
+Arpspoof.apk
+netspoof
+wifi file transfer pro 
+in-appstore.com google play 免费内购
+Fing 网络工具包
+Network Discovery
+Network Info II
+Shark for root 
+DroidCAT  finding all ethical hacking / information security related application published in android domain
+SMSSpoofer
+以下是来自iSECPartner
+Android SSL Bypass 
+AndroidPinning
+Intent Fuzzer 
+Intent Sniffer
+Package Play
+Manifest Explorer
+取证apk AndroidForensics.apk ForenDroid.apk
+Anti android Network toolkit
+anmap Android Network Mapper
